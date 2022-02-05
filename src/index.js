@@ -23,7 +23,18 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+  const sizeBD = users.length;
+
+  if (sizeBD >= 10 || user.pro === false) {
+    return response
+      .status(403)
+      .json({
+        error: "Your free plan has reached the limit of 10 registrations",
+      });
+  }
+
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
@@ -31,7 +42,15 @@ function checksTodoExists(request, response, next) {
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+  const user = users.find((users) => users.id === id);
+
+  if (!user) {
+    return response.status(404).json({ error: "User not found!" });
+  }
+  request.user = user;
+
+  return next();
 }
 
 app.post("/users", (request, response) => {
